@@ -8040,6 +8040,8 @@ sub received_login_token {
 # this info will be sent to xkore 2 clients
 sub hotkeys {
 	my ($self, $args) = @_;
+	return if $args->{tab} eq 1;
+	# TODO: support both tabs for hotkeys
 	undef $hotkeyList;
 	my $msg;
 
