@@ -198,9 +198,13 @@ sub map_loaded {
 	$self->send_party_list($client, $char);
 	$self->send_pet($client);
 	$self->send_welcome($client);
+	$self->request_guild_info();
 
 	# load_confirm (unlock keyboard)
 	$self->unlock_keyboard($client);
+	
+	# unlock cart. might cause some weirdness
+	$self->unlock_cart($client);
 
 	$args->{mangle} = 2;
 	$RunOnce = 0;
@@ -234,6 +238,15 @@ sub send_quest_info {
 		$data .= pack('C2 v V', 0xB2, 0x02, length($m_output) + 8, $k) . $m_output;
 		$client->send($data);
 	}
+}
+
+sub request_guild_info {
+	$messageSender->sendGuildMasterMemberCheck();
+	$messageSender->sendGuildRequestInfo(0);
+	$messageSender->sendGuildRequestInfo(1);
+	$messageSender->sendGuildRequestInfo(2);
+	$messageSender->sendGuildRequestInfo(3);
+	$messageSender->sendGuildRequestInfo(4);
 }
 
 sub send_guild_info {
@@ -919,6 +932,13 @@ sub unlock_keyboard {
 	{
 		$client->send(pack("v", 0x0B1B));
 	}
+}
+
+sub unlock_cart {
+	my ($self, $client) = @_;
+	
+	my $var = (0 << 0)|(1 << 9);
+	$client->send(pack('v2 V', 0x99b, 0, $var));
 }
 
 1;
